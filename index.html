@@ -1,159 +1,162 @@
 <!doctype html>
 <html lang="id">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="robots" content="noindex, nofollow">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Drama Player Grid</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <style>
-            /* Warna scrollbar agar tetap gelap */
-            ::-webkit-scrollbar {
-                width: 5px;
-            }
-            ::-webkit-scrollbar-track {
-                background: #1e293b;
-            }
-            ::-webkit-scrollbar-thumb {
-                background: #38bdf8;
-                border-radius: 10px;
-            }
-        </style>
-    </head>
-    <body class="bg-slate-900 text-white p-4 font-sans">
-        <div class="max-w-md mx-auto">
-            <h1
-                class="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2"
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="robots" content="noindex, nofollow">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Drama Player Grid</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+      <style>
+         /* Warna scrollbar agar tetap gelap */
+         ::-webkit-scrollbar {
+         width: 5px;
+         }
+         ::-webkit-scrollbar-track {
+         background: #1e293b;
+         }
+         ::-webkit-scrollbar-thumb {
+         background: #38bdf8;
+         border-radius: 10px;
+         }
+      </style>
+   </head>
+   <body class="bg-slate-900 text-white p-4 font-sans">
+      <div class="max-w-md mx-auto">
+         <h1
+            class="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2"
             >
-                <span>🎬</span> Nonton Drama
-            </h1>
-
-            <div
-                class="bg-black rounded-xl overflow-hidden shadow-2xl border border-slate-700 mb-4"
+            <span>🎬</span> Nonton Drama
+         </h1>
+         <div
+            class="bg-black rounded-xl overflow-hidden shadow-2xl border border-slate-700 mb-4"
             >
-                <video
-                    id="videoPlayer"
-                    controls
-                    autoplay
-                    class="w-full aspect-video"
-                >
-                    <source id="videoSource" src="" type="video/mp4" />
-                </video>
+            <video
+               id="videoPlayer"
+               controls
+               autoplay
+               class="w-full aspect-video"
+               >
+               <source id="videoSource" src="" type="video/mp4" />
+            </video>
+         </div>
+         <div class="mb-6">
+            <h2
+               id="episodeName"
+               class="font-bold text-lg text-slate-100 italic"
+               >
+               Memuat...
+            </h2>
+            <div class="flex justify-between items-center mt-1">
+               <span
+                  id="qualityInfo"
+                  class="text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 text-slate-400"
+                  >Kualitas: -</span
+                  >
+               <span class="text-xs text-sky-500 font-medium"
+                  >Auto-Next ON</span
+                  >
             </div>
-
-            <div class="mb-6">
-                <h2
-                    id="episodeName"
-                    class="font-bold text-lg text-slate-100 italic"
-                >
-                    Memuat...
-                </h2>
-                <div class="flex justify-between items-center mt-1">
-                    <span
-                        id="qualityInfo"
-                        class="text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 text-slate-400"
-                        >Kualitas: -</span
-                    >
-                    <span class="text-xs text-sky-500 font-medium"
-                        >Auto-Next ON</span
-                    >
-                </div>
-            </div>
-
-            <hr class="border-slate-800 mb-6" />
-
-            <h3
-                class="text-sm font-semibold text-slate-400 mb-3 uppercase tracking-wider"
+         </div>
+         <hr class="border-slate-800 mb-6" />
+         <h3
+            class="text-sm font-semibold text-slate-400 mb-3 uppercase tracking-wider"
             >
-                Pilih Episode:
-            </h3>
-            <div
-                id="episodeGrid"
-                class="grid grid-cols-5 gap-2 max-h-64 overflow-y-auto p-1"
+            Pilih Episode:
+         </h3>
+         <div
+            id="episodeGrid"
+            class="grid grid-cols-5 gap-2 max-h-64 overflow-y-auto p-1"
             ></div>
-        </div>
-
-        <script>
-            let dramaData = []; // Inisialisasi array kosong
-            let currentIdx = 0;
-
-            // FUNGSI BARU: Mengambil data dari file JSON eksternal
-            async function fetchDramaData() {
-                try {
-                    const response = await fetch("index.json"); // Memanggil file json
-                    if (!response.ok) throw new Error("Gagal memuat file JSON");
-
-                    dramaData = await response.json();
-
-                    // Setelah data dapat, jalankan fungsi awal
-                    renderGrid();
-                    loadVideo(0);
-                } catch (error) {
-                    console.error("Error:", error);
-                    document.getElementById("episodeName").innerText =
-                        "Gagal memuat data drama.";
-                }
-            }
-
-            function renderGrid() {
-                const grid = document.getElementById("episodeGrid");
-                grid.innerHTML = "";
-
-                dramaData.forEach((ep, index) => {
-                    const btn = document.createElement("button");
-                    btn.innerText = index + 1;
-
-                    const isActive = index === currentIdx;
-                    btn.className = `aspect-square rounded-lg font-bold transition-all border ${
-                        isActive
-                            ? "bg-sky-500 border-sky-400 text-white shadow-lg shadow-sky-900/20 scale-95"
-                            : "bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700"
-                    }`;
-
-                    btn.onclick = () => loadVideo(index);
-                    grid.appendChild(btn);
-                });
-            }
-
-            function loadVideo(index) {
-                if (
-                    !dramaData ||
-                    dramaData.length === 0 ||
-                    index < 0 ||
-                    index >= dramaData.length
-                )
-                    return;
-
-                currentIdx = index;
-                const episode = dramaData[index];
-
-                const videoList = episode.cdnList[0].videoPathList;
-                const lowRes = videoList.sort(
-                    (a, b) => a.quality - b.quality,
-                )[0];
-
-                document.getElementById("episodeName").innerText =
-                    "Sedang Menonton: " + episode.chapterName;
-                document.getElementById("qualityInfo").innerText =
-                    "Kualitas: " + lowRes.quality + "p";
-
-                const video = document.getElementById("videoPlayer");
-                const source = document.getElementById("videoSource");
-                source.src = lowRes.videoPath;
-
-                video.load();
-                video.play();
-                renderGrid();
-            }
-
-            document.getElementById("videoPlayer").onended = () => {
-                if (currentIdx < dramaData.length - 1) {
-                    loadVideo(currentIdx + 1);
-                }
-            };
-
-            // Jalankan pengambilan data saat halaman dibuka
-            fetchDramaData();
-        </script>
-    </body>
+      </div>
+      <script>
+         let dramaData = []; // Inisialisasi array kosong
+         let currentIdx = 0;
+         
+         // FUNGSI BARU: Mengambil data dari file JSON eksternal
+         async function fetchDramaData() {
+         try {
+         // GANTI ID_NPOINT_ANDA dengan ID yang ada di URL npoint Anda
+         // Contoh: https://api.npoint.io/8890xxxxxxxxx
+         const url = "https://api.npoint.io/ID_NPOINT_ANDA"; 
+         
+         const response = await fetch(url);
+         
+         if (!response.ok) throw new Error("Gagal mengambil data dari npoint");
+         
+         dramaData = await response.json();
+         
+         // Cek di console (F12) jika data masuk
+         console.log("Data dari npoint:", dramaData);
+         
+         if (dramaData && dramaData.length > 0) {
+         renderGrid();
+         loadVideo(0);
+         }
+         } catch (error) {
+         console.error("Error Fetching:", error);
+         document.getElementById("episodeName").innerText = "Gagal memuat data dari server.";
+         }
+         }
+         
+         function renderGrid() {
+             const grid = document.getElementById("episodeGrid");
+             grid.innerHTML = "";
+         
+             dramaData.forEach((ep, index) => {
+                 const btn = document.createElement("button");
+                 btn.innerText = index + 1;
+         
+                 const isActive = index === currentIdx;
+                 btn.className = `aspect-square rounded-lg font-bold transition-all border ${
+                     isActive
+                         ? "bg-sky-500 border-sky-400 text-white shadow-lg shadow-sky-900/20 scale-95"
+                         : "bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700"
+                 }`;
+         
+                 btn.onclick = () => loadVideo(index);
+                 grid.appendChild(btn);
+             });
+         }
+         
+         function loadVideo(index) {
+             if (
+                 !dramaData ||
+                 dramaData.length === 0 ||
+                 index < 0 ||
+                 index >= dramaData.length
+             )
+                 return;
+         
+             currentIdx = index;
+             const episode = dramaData[index];
+         
+             const videoList = episode.cdnList[0].videoPathList;
+             const lowRes = videoList.sort(
+                 (a, b) => a.quality - b.quality,
+             )[0];
+         
+             document.getElementById("episodeName").innerText =
+                 "Sedang Menonton: " + episode.chapterName;
+             document.getElementById("qualityInfo").innerText =
+                 "Kualitas: " + lowRes.quality + "p";
+         
+             const video = document.getElementById("videoPlayer");
+             const source = document.getElementById("videoSource");
+             source.src = lowRes.videoPath;
+         
+             video.load();
+             video.play();
+             renderGrid();
+         }
+         
+         document.getElementById("videoPlayer").onended = () => {
+             if (currentIdx < dramaData.length - 1) {
+                 loadVideo(currentIdx + 1);
+             }
+         };
+         
+         // Jalankan pengambilan data saat halaman dibuka
+         fetchDramaData();
+      </script>
+   </body>
 </html>
