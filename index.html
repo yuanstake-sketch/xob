@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="robots" content="noindex, nofollow" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Drama Player Grid - Decrypted</title>
+        <title>Drama Player Grid - Sansekai Decrypt</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             ::-webkit-scrollbar {
@@ -200,7 +200,7 @@
                 });
             }
 
-            // FUNGSI LOAD VIDEO DENGAN DEKRIPSI
+            // FUNGSI LOAD VIDEO DENGAN DEKRIPSI (Targeting streamUrl)
             async function loadVideo(index) {
                 if (!dramaData || index < 0 || index >= dramaData.length) return;
 
@@ -212,43 +212,46 @@
                     return;
                 }
 
-                // Ambil URL terenkripsi
+                // Pilih video kualitas tertinggi
                 const videoList = episode.cdnList[0].videoPathList;
                 const encryptedPath = videoList.sort((a, b) => b.quality - a.quality)[0].videoPath;
 
-                // UI Loading State
+                // UI Loading
                 const epNameElem = document.getElementById("episodeName");
                 const qualityElem = document.getElementById("qualityInfo");
-                epNameElem.innerText = "Mendekripsi Video...";
-                qualityElem.innerText = "Status: Membuka Kunci...";
+                epNameElem.innerHTML = `<span class="text-sky-400 animate-pulse">Mendekripsi Episode ${index + 1}...</span>`;
+                qualityElem.innerText = "Status: Membuka Kunci DRM...";
 
                 try {
-                    // Panggil API Dekripsi
+                    // Panggil API Dekripsi Sansekai
                     const decryptRes = await fetch(
                         `https://api.sansekai.my.id/api/dramabox/decrypt?url=${encodeURIComponent(encryptedPath)}`
                     );
                     const decryptData = await decryptRes.json();
 
-                    // Ambil URL hasil dekripsi (Asumsi API mengembalikan { data: "url" })
-                    const finalVideoUrl = decryptData.data || decryptData.url || decryptData;
+                    // AMBIL streamUrl dari JSON
+                    if (decryptData.success && decryptData.streamUrl) {
+                        const finalVideoUrl = decryptData.streamUrl;
 
-                    if (!finalVideoUrl) throw new Error("URL Dekripsi Kosong");
+                        // Set Video Source
+                        epNameElem.innerText = episode.chapterName;
+                        qualityElem.innerText = "Kualitas: Didekripsi (1080p)";
 
-                    // Set ke Video Player
-                    epNameElem.innerText = episode.chapterName;
-                    qualityElem.innerText = "Kualitas: Decrypted (Ready)";
+                        const video = document.getElementById("videoPlayer");
+                        const source = document.getElementById("videoSource");
 
-                    const video = document.getElementById("videoPlayer");
-                    const source = document.getElementById("videoSource");
-
-                    source.src = finalVideoUrl;
-                    video.load();
-                    video.play().catch(() => console.log("Menunggu interaksi user"));
+                        source.src = finalVideoUrl;
+                        video.load();
+                        video.play().catch(() => console.log("Menunggu interaksi user"));
+                    } else {
+                        throw new Error(decryptData.message || "Gagal mendapatkan streamUrl");
+                    }
 
                 } catch (error) {
-                    console.error("Gagal Dekripsi:", error);
-                    epNameElem.innerText = "Gagal Dekripsi Video!";
-                    qualityElem.innerText = "Kualitas: Error";
+                    console.error("Decrypt Error:", error);
+                    epNameElem.innerText = "Gagal Dekripsi!";
+                    qualityElem.innerText = "Status: Error Server";
+                    alert("Gagal mendekripsi video: " + error.message);
                 }
 
                 renderGrid();
