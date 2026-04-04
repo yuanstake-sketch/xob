@@ -243,48 +243,69 @@
                 });
             }
 
-            function loadVideo(index) {
-                if (!dramaData || index < 0 || index >= dramaData.length)
-                    return;
+            async function loadVideo(index) {
+    if (!dramaData || index < 0 || index >= dramaData.length) return;
 
-                currentIdx = index;
-                const episode = dramaData[index];
+    currentIdx = index;
+    const episode = dramaData[index];
 
-                if (!episode.cdnList || episode.cdnList.length === 0) {
-                    alert("Video tidak tersedia untuk episode ini.");
-                    return;
-                }
+    if (!episode.cdnList || episode.cdnList.length === 0) {
+        alert("Video tidak tersedia untuk episode ini.");
+        return;
+    }
 
-                const videoList = episode.cdnList[0].videoPathList;
-                const lowRes = videoList.sort(
-                    (a, b) => a.quality - b.quality,
-                )[0];
+    // Ambil URL video asli (terenkripsi)
+    const videoList = episode.cdnList[0].videoPathList;
+    const originalVideoPath = videoList.sort((a, b) => b.quality - a.quality)[0].videoPath;
 
-                document.getElementById("episodeName").innerText =
-                    episode.chapterName;
-                document.getElementById("qualityInfo").innerText =
-                    "Kualitas: " + lowRes.quality + "p";
+    // Update UI Status
+    const episodeNameElem = document.getElementById("episodeName");
+    episodeNameElem.innerText = "Mendekripsi Video... 🔓";
+    document.getElementById("qualityInfo").innerText = "Kualitas: Sedang diproses";
 
-                const video = document.getElementById("videoPlayer");
-                const source = document.getElementById("videoSource");
+    try {
+        // 1. Panggil API Dekripsi
+        // Pastikan endpoint dan parameter 'url' sesuai dengan spek API sansekai kamu
+        const decryptRes = await fetch(
+            `https://api.sansekai.my.id/api/dramabox/decrypt?url=${encodeURIComponent(originalVideoPath)}`
+        );
+        
+        const decryptData = await decryptRes.json();
 
-                source.src = lowRes.videoPath;
-                video.load();
-                video
-                    .play()
-                    .catch(() => console.log("Menunggu interaksi user"));
+        // 2. Ambil URL hasil dekripsi dari respon JSON
+        // Asumsi struktur JSON: { "data": "https://..." } atau { "url": "https://..." }
+        const decryptedUrl = decryptData.data || decryptData.url || decryptData;
 
-                renderGrid();
+        if (!decryptedUrl) throw new Error("URL Dekripsi tidak ditemukan");
 
-                // Scroll grid otomatis ke arah button aktif
-                const activeBtn = document.querySelectorAll(
-                    "#episodeGrid button",
-                )[index];
-                if (activeBtn)
-                    activeBtn.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center",
-                    });
+        // 3. Update Informasi UI
+        episodeNameElem.innerText = episode.chapterName;
+        document.getElementById("qualityInfo").innerText = "Kualitas: Decrypted (High)";
+
+        // 4. Masukkan ke Player
+        const video = document.getElementById("videoPlayer");
+        const source = document.getElementById("videoSource");
+
+        source.src = decryptedUrl;
+        video.load();
+        video.play().catch(() => console.log("Menunggu interaksi user"));
+
+        renderGrid();
+
+        // Scroll grid otomatis
+        const activeBtn = document.querySelectorAll("#episodeGrid button")[index];
+        if (activeBtn) {
+            activeBtn.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        }
+
+    } catch (error) {
+        console.error("Error Decrypting:", error);
+        episodeNameElem.innerText = "Gagal Dekripsi Video ❌";
+        alert("Terjadi kesalahan saat mencoba membuka kunci video.");
+    }
             }
 
             document.getElementById("videoPlayer").onended = () => {
