@@ -1,294 +1,273 @@
 <!doctype html>
 <html lang="id">
-   <head>
-      <meta charset="UTF-8" />
-      <meta name="robots" content="noindex, nofollow" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Drama Player Grid</title>
-      <script src="https://cdn.tailwindcss.com"></script>
-      <style>
-         ::-webkit-scrollbar {
-         width: 5px;
-         }
-         ::-webkit-scrollbar-track {
-         background: #1e293b;
-         }
-         ::-webkit-scrollbar-thumb {
-         background: #38bdf8;
-         border-radius: 10px;
-         }
-         /* Class untuk membatasi baris teks */
-         .line-clamp-2 {
-         display: -webkit-box;
-         -webkit-line-clamp: 2;
-         -webkit-box-orient: vertical;
-         overflow: hidden;
-         }
-      </style>
-   </head>
-   <body class="bg-slate-900 text-white p-4 font-sans">
-      <div class="max-w-md mx-auto">
-         <div class="flex justify-between items-center mb-4">
-            <h1
-               class="text-xl font-bold text-sky-400 flex items-center gap-2"
-               >
-               <span>🎬</span> Nonton Drama
-            </h1>
-            <button
-               onclick="initApp()"
-               class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 text-slate-300 transition-colors"
-               >
-            Ganti Drama
-            </button>
-         </div>
-         <div
-            class="bg-black rounded-xl overflow-hidden shadow-2xl border border-slate-700 mb-4"
-            >
-            <video
-               id="videoPlayer"
-               controls
-               autoplay
-               class="w-full aspect-video"
-               >
-               <source id="videoSource" src="" type="video/mp4" />
-            </video>
-         </div>
-         <div class="mb-6">
-            <h2 id="episodeName" class="font-bold text-lg text-slate-100">
-               Memilih Episode...
-            </h2>
-            <div class="flex justify-between items-center mt-1">
-               <span
-                  id="qualityInfo"
-                  class="text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 text-slate-400"
-                  >Kualitas: -</span
-                  >
-               <span
-                  class="text-xs text-sky-500 font-medium flex items-center gap-1"
-                  >
-               <span
-                  class="w-2 h-2 bg-sky-500 rounded-full animate-pulse"
-                  ></span>
-               Auto-Next ON
-               </span>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Drama Player Grid - Decrypted</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            ::-webkit-scrollbar {
+                width: 5px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #1e293b;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #38bdf8;
+                border-radius: 10px;
+            }
+            .line-clamp-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body class="bg-slate-900 text-white p-4 font-sans">
+        <div class="max-w-md mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-xl font-bold text-sky-400 flex items-center gap-2">
+                    <span>🎬</span> Nonton Drama
+                </h1>
+                <button
+                    onclick="initApp()"
+                    class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 text-slate-300 transition-colors"
+                >
+                    Ganti Drama
+                </button>
             </div>
-         </div>
-         <hr class="border-slate-800 mb-6" />
-         <h3
-            class="text-sm font-semibold text-slate-400 mb-3 uppercase tracking-wider"
-            >
-            Pilih Episode:
-         </h3>
-         <div
-            id="episodeGrid"
-            class="grid grid-cols-5 gap-2 max-h-64 overflow-y-auto p-1 mb-6"
-            ></div>
-         <div
-            id="dramaHeader"
-            class="mt-8 pt-6 border-t border-slate-800 hidden text-left"
-            >
-            <div class="flex gap-4 items-start">
-               <img
-                  id="dramaCover"
-                  src=""
-                  alt="Cover"
-                  class="w-24 h-36 object-cover rounded-lg shadow-lg border border-slate-700"
-                  />
-               <div class="flex-1">
-                  <h1
-                     id="dramaTitle"
-                     class="text-xl font-bold text-sky-400 leading-tight mb-1"
-                     >
-                     Memuat Judul...
-                  </h1>
-                  <div
-                     class="flex flex-wrap gap-1 mb-2"
-                     id="dramaTags"
-                     ></div>
-                  <p
-                     id="dramaCount"
-                     class="text-xs text-slate-400 font-medium"
-                     ></p>
-               </div>
+
+            <div class="bg-black rounded-xl overflow-hidden shadow-2xl border border-slate-700 mb-4">
+                <video
+                    id="videoPlayer"
+                    controls
+                    autoplay
+                    class="w-full aspect-video"
+                >
+                    <source id="videoSource" src="" type="video/mp4" />
+                </video>
             </div>
+
+            <div class="mb-6">
+                <h2 id="episodeName" class="font-bold text-lg text-slate-100">
+                    Memilih Episode...
+                </h2>
+                <div class="flex justify-between items-center mt-1">
+                    <span
+                        id="qualityInfo"
+                        class="text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 text-slate-400"
+                        >Kualitas: -</span
+                    >
+                    <span class="text-xs text-sky-500 font-medium flex items-center gap-1">
+                        <span class="w-2 h-2 bg-sky-500 rounded-full animate-pulse"></span>
+                        Auto-Next ON
+                    </span>
+                </div>
+            </div>
+
+            <hr class="border-slate-800 mb-6" />
+
+            <h3 class="text-sm font-semibold text-slate-400 mb-3 uppercase tracking-wider">
+                Pilih Episode:
+            </h3>
             <div
-               class="mt-4 bg-slate-800/40 p-3 rounded-lg border border-slate-800/60 cursor-pointer"
-               onclick="toggleSinopsis()"
-               >
-               <p
-                  id="dramaIntro"
-                  class="text-sm text-slate-300 line-clamp-2 transition-all italic leading-relaxed"
-                  >
-                  Memuat sinopsis...
-               </p>
-               <div
-                  id="readMoreLabel"
-                  class="text-[10px] text-sky-500 font-bold mt-1 text-right uppercase"
-                  >
-                  Selengkapnya
-               </div>
+                id="episodeGrid"
+                class="grid grid-cols-5 gap-2 max-h-64 overflow-y-auto p-1 mb-6"
+            ></div>
+
+            <div id="dramaHeader" class="mt-8 pt-6 border-t border-slate-800 hidden text-left">
+                <div class="flex gap-4 items-start">
+                    <img
+                        id="dramaCover"
+                        src=""
+                        alt="Cover"
+                        class="w-24 h-36 object-cover rounded-lg shadow-lg border border-slate-700"
+                    />
+                    <div class="flex-1">
+                        <h1 id="dramaTitle" class="text-xl font-bold text-sky-400 leading-tight mb-1">
+                            Memuat Judul...
+                        </h1>
+                        <div class="flex flex-wrap gap-1 mb-2" id="dramaTags"></div>
+                        <p id="dramaCount" class="text-xs text-slate-400 font-medium"></p>
+                    </div>
+                </div>
+                <div
+                    class="mt-4 bg-slate-800/40 p-3 rounded-lg border border-slate-800/60 cursor-pointer"
+                    onclick="toggleSinopsis()"
+                >
+                    <p id="dramaIntro" class="text-sm text-slate-300 line-clamp-2 transition-all italic leading-relaxed">
+                        Memuat sinopsis...
+                    </p>
+                    <div id="readMoreLabel" class="text-[10px] text-sky-500 font-bold mt-1 text-right uppercase">
+                        Selengkapnya
+                    </div>
+                </div>
             </div>
-         </div>
-      </div>
-      <script>
-         let dramaData = [];
-         let currentIdx = 0;
-         
-         async function initApp() {
-             const bookId = prompt("Masukkan Book ID Drama:", "");
-         
-             if (!bookId) {
-                 if (dramaData.length === 0) {
-                     document.getElementById("episodeName").innerText =
-                         "Book ID diperlukan!";
-                 }
-                 return;
-             }
-         
-             // Reset Tampilan
-             document.getElementById("dramaHeader").classList.add("hidden");
-             document.getElementById("episodeGrid").innerHTML =
-                 "<div class='text-slate-500 col-span-5 text-center text-sm py-4'>Memuat episode...</div>";
-         
-             try {
-                 const [detailRes, episodesRes] = await Promise.all([
-                     fetch(
-                         `https://api.sansekai.my.id/api/dramabox/detail?bookId=${bookId}`,
-                     ),
-                     fetch(
-                         `https://api.sansekai.my.id/api/dramabox/allepisode?bookId=${bookId}`,
-                     ),
-                 ]);
-         
-                 const detailData = await detailRes.json();
-                 const episodesData = await episodesRes.json();
-         
-                 renderDetail(detailData);
-         
-                 dramaData = episodesData.data || episodesData;
-         
-                 if (dramaData && dramaData.length > 0) {
-                     renderGrid();
-                     loadVideo(0);
-                 } else {
-                     document.getElementById("episodeName").innerText =
-                         "Episode tidak ditemukan.";
-                 }
-             } catch (error) {
-                 console.error("Error:", error);
-                 document.getElementById("episodeName").innerText =
-                     "Gagal memuat data.";
-             }
-         }
-         
-         function renderDetail(data) {
-             const header = document.getElementById("dramaHeader");
-             header.classList.remove("hidden");
-         
-             document.getElementById("dramaTitle").innerText = data.bookName;
-             document.getElementById("dramaCover").src = data.coverWap;
-             document.getElementById("dramaCount").innerText =
-                 `Total: ${data.chapterCount} Episode`;
-             document.getElementById("dramaIntro").innerText =
-                 data.introduction;
-         
-             const tagContainer = document.getElementById("dramaTags");
-             tagContainer.innerHTML = "";
-             if (data.tags) {
-                 data.tags.slice(0, 4).forEach((tag) => {
-                     const span = document.createElement("span");
-                     span.className =
-                         "text-[10px] bg-sky-900/30 text-sky-400 px-2 py-0.5 rounded border border-sky-800/50";
-                     span.innerText = tag;
-                     tagContainer.appendChild(span);
-                 });
-             }
-         }
-         
-         // Fungsi untuk Membuka/Tutup Sinopsis
-         function toggleSinopsis() {
-             const intro = document.getElementById("dramaIntro");
-             const label = document.getElementById("readMoreLabel");
-         
-             if (intro.classList.contains("line-clamp-2")) {
-                 intro.classList.remove("line-clamp-2");
-                 label.innerText = "Tutup";
-             } else {
-                 intro.classList.add("line-clamp-2");
-                 label.innerText = "Selengkapnya";
-             }
-         }
-         
-         function renderGrid() {
-             const grid = document.getElementById("episodeGrid");
-             grid.innerHTML = "";
-         
-             dramaData.forEach((ep, index) => {
-                 const btn = document.createElement("button");
-                 btn.innerText = index + 1;
-                 const isActive = index === currentIdx;
-                 btn.className = `aspect-square rounded-lg font-bold transition-all border ${
-                     isActive
-                         ? "bg-sky-500 border-sky-400 text-white shadow-lg shadow-sky-900/20 scale-95"
-                         : "bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700"
-                 }`;
-                 btn.onclick = () => loadVideo(index);
-                 grid.appendChild(btn);
-             });
-         }
-         
-         function loadVideo(index) {
-             if (!dramaData || index < 0 || index >= dramaData.length)
-                 return;
-         
-             currentIdx = index;
-             const episode = dramaData[index];
-         
-             if (!episode.cdnList || episode.cdnList.length === 0) {
-                 alert("Video tidak tersedia untuk episode ini.");
-                 return;
-             }
-         
-             const videoList = episode.cdnList[0].videoPathList;
-             const lowRes = videoList.sort(
-                 (a, b) => a.quality - b.quality,
-             )[0];
-         
-             document.getElementById("episodeName").innerText =
-                 episode.chapterName;
-             document.getElementById("qualityInfo").innerText =
-                 "Kualitas: " + lowRes.quality + "p";
-         
-             const video = document.getElementById("videoPlayer");
-             const source = document.getElementById("videoSource");
-         
-             source.src = lowRes.videoPath;
-             video.load();
-             video
-                 .play()
-                 .catch(() => console.log("Menunggu interaksi user"));
-         
-             renderGrid();
-         
-             // Scroll grid otomatis ke arah button aktif
-             const activeBtn = document.querySelectorAll(
-                 "#episodeGrid button",
-             )[index];
-             if (activeBtn)
-                 activeBtn.scrollIntoView({
-                     behavior: "smooth",
-                     block: "center",
-                 });
-         }
-         
-         document.getElementById("videoPlayer").onended = () => {
-             if (currentIdx < dramaData.length - 1) {
-                 loadVideo(currentIdx + 1);
-             }
-         };
-         
-         // Jalankan aplikasi saat load pertama kali
-         initApp();
-      </script>
-   </body>
+        </div>
+
+        <script>
+            let dramaData = [];
+            let currentIdx = 0;
+
+            async function initApp() {
+                const bookId = prompt("Masukkan Book ID Drama:", "");
+
+                if (!bookId) {
+                    if (dramaData.length === 0) {
+                        document.getElementById("episodeName").innerText = "Book ID diperlukan!";
+                    }
+                    return;
+                }
+
+                document.getElementById("dramaHeader").classList.add("hidden");
+                document.getElementById("episodeGrid").innerHTML =
+                    "<div class='text-slate-500 col-span-5 text-center text-sm py-4'>Memuat episode...</div>";
+
+                try {
+                    const [detailRes, episodesRes] = await Promise.all([
+                        fetch(`https://api.sansekai.my.id/api/dramabox/detail?bookId=${bookId}`),
+                        fetch(`https://api.sansekai.my.id/api/dramabox/allepisode?bookId=${bookId}`),
+                    ]);
+
+                    const detailData = await detailRes.json();
+                    const episodesData = await episodesRes.json();
+
+                    renderDetail(detailData);
+                    dramaData = episodesData.data || episodesData;
+
+                    if (dramaData && dramaData.length > 0) {
+                        renderGrid();
+                        loadVideo(0);
+                    } else {
+                        document.getElementById("episodeName").innerText = "Episode tidak ditemukan.";
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    document.getElementById("episodeName").innerText = "Gagal memuat data.";
+                }
+            }
+
+            function renderDetail(data) {
+                const header = document.getElementById("dramaHeader");
+                header.classList.remove("hidden");
+
+                document.getElementById("dramaTitle").innerText = data.bookName;
+                document.getElementById("dramaCover").src = data.coverWap;
+                document.getElementById("dramaCount").innerText = `Total: ${data.chapterCount} Episode`;
+                document.getElementById("dramaIntro").innerText = data.introduction;
+
+                const tagContainer = document.getElementById("dramaTags");
+                tagContainer.innerHTML = "";
+                if (data.tags) {
+                    data.tags.slice(0, 4).forEach((tag) => {
+                        const span = document.createElement("span");
+                        span.className = "text-[10px] bg-sky-900/30 text-sky-400 px-2 py-0.5 rounded border border-sky-800/50";
+                        span.innerText = tag;
+                        tagContainer.appendChild(span);
+                    });
+                }
+            }
+
+            function toggleSinopsis() {
+                const intro = document.getElementById("dramaIntro");
+                const label = document.getElementById("readMoreLabel");
+                if (intro.classList.contains("line-clamp-2")) {
+                    intro.classList.remove("line-clamp-2");
+                    label.innerText = "Tutup";
+                } else {
+                    intro.classList.add("line-clamp-2");
+                    label.innerText = "Selengkapnya";
+                }
+            }
+
+            function renderGrid() {
+                const grid = document.getElementById("episodeGrid");
+                grid.innerHTML = "";
+
+                dramaData.forEach((ep, index) => {
+                    const btn = document.createElement("button");
+                    btn.innerText = index + 1;
+                    const isActive = index === currentIdx;
+                    btn.className = `aspect-square rounded-lg font-bold transition-all border ${
+                        isActive
+                            ? "bg-sky-500 border-sky-400 text-white shadow-lg shadow-sky-900/20 scale-95"
+                            : "bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700"
+                    }`;
+                    btn.onclick = () => loadVideo(index);
+                    grid.appendChild(btn);
+                });
+            }
+
+            // FUNGSI LOAD VIDEO DENGAN DEKRIPSI
+            async function loadVideo(index) {
+                if (!dramaData || index < 0 || index >= dramaData.length) return;
+
+                currentIdx = index;
+                const episode = dramaData[index];
+
+                if (!episode.cdnList || episode.cdnList.length === 0) {
+                    alert("Video tidak tersedia untuk episode ini.");
+                    return;
+                }
+
+                // Ambil URL terenkripsi
+                const videoList = episode.cdnList[0].videoPathList;
+                const encryptedPath = videoList.sort((a, b) => b.quality - a.quality)[0].videoPath;
+
+                // UI Loading State
+                const epNameElem = document.getElementById("episodeName");
+                const qualityElem = document.getElementById("qualityInfo");
+                epNameElem.innerText = "Mendekripsi Video...";
+                qualityElem.innerText = "Status: Membuka Kunci...";
+
+                try {
+                    // Panggil API Dekripsi
+                    const decryptRes = await fetch(
+                        `https://api.sansekai.my.id/api/dramabox/decrypt?url=${encodeURIComponent(encryptedPath)}`
+                    );
+                    const decryptData = await decryptRes.json();
+
+                    // Ambil URL hasil dekripsi (Asumsi API mengembalikan { data: "url" })
+                    const finalVideoUrl = decryptData.data || decryptData.url || decryptData;
+
+                    if (!finalVideoUrl) throw new Error("URL Dekripsi Kosong");
+
+                    // Set ke Video Player
+                    epNameElem.innerText = episode.chapterName;
+                    qualityElem.innerText = "Kualitas: Decrypted (Ready)";
+
+                    const video = document.getElementById("videoPlayer");
+                    const source = document.getElementById("videoSource");
+
+                    source.src = finalVideoUrl;
+                    video.load();
+                    video.play().catch(() => console.log("Menunggu interaksi user"));
+
+                } catch (error) {
+                    console.error("Gagal Dekripsi:", error);
+                    epNameElem.innerText = "Gagal Dekripsi Video!";
+                    qualityElem.innerText = "Kualitas: Error";
+                }
+
+                renderGrid();
+
+                const activeBtn = document.querySelectorAll("#episodeGrid button")[index];
+                if (activeBtn)
+                    activeBtn.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                    });
+            }
+
+            document.getElementById("videoPlayer").onended = () => {
+                if (currentIdx < dramaData.length - 1) {
+                    loadVideo(currentIdx + 1);
+                }
+            };
+
+            initApp();
+        </script>
+    </body>
 </html>
