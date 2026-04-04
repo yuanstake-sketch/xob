@@ -3,24 +3,19 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Drama Player - Multi Quality</title>
+        <title>Drama Player - Persistent Quality</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             ::-webkit-scrollbar { width: 5px; }
             ::-webkit-scrollbar-track { background: #1e293b; }
             ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 10px; }
-            .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         </style>
     </head>
     <body class="bg-slate-900 text-white p-4 font-sans text-sm">
         <div class="max-w-md mx-auto">
             <div class="flex justify-between items-center mb-4">
-                <h1 class="text-xl font-bold text-sky-400 flex items-center gap-2">
-                    <span>🎬</span> Drama Player
-                </h1>
-                <button onclick="initApp()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 transition-colors">
-                    Ganti Drama
-                </button>
+                <h1 class="text-xl font-bold text-sky-400 flex items-center gap-2">🎬 Drama Player</h1>
+                <button onclick="initApp()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 transition-colors">Ganti Drama</button>
             </div>
 
             <div class="bg-black rounded-xl overflow-hidden shadow-2xl border border-slate-700 mb-4 relative">
@@ -41,30 +36,17 @@
                     <div class="flex items-center gap-2">
                         <span class="text-[10px] uppercase text-slate-400 font-bold">Kualitas:</span>
                         <select id="qualitySelect" onchange="handleManualQualityChange()" class="bg-slate-900 text-sky-400 text-xs border border-slate-700 rounded px-2 py-1 outline-none focus:border-sky-500 cursor-pointer">
-                            </select>
+                        </select>
                     </div>
                     <div class="flex items-center gap-1.5 bg-sky-500/10 px-2 py-1 rounded border border-sky-500/20">
                          <span class="w-1.5 h-1.5 bg-sky-500 rounded-full animate-pulse"></span>
-                         <span class="text-[9px] text-sky-500 font-bold tracking-tight uppercase">Auto-Next</span>
+                         <span class="text-[9px] text-sky-500 font-bold uppercase">Auto-Next</span>
                     </div>
                 </div>
             </div>
 
             <hr class="border-slate-800 mb-6" />
-
-            <h3 class="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-widest">Daftar Episode:</h3>
             <div id="episodeGrid" class="grid grid-cols-5 gap-2 max-h-52 overflow-y-auto p-1 mb-6"></div>
-
-            <div id="dramaHeader" class="mt-8 pt-6 border-t border-slate-800 hidden">
-                <div class="flex gap-3 items-start">
-                    <img id="dramaCover" src="" class="w-16 h-24 object-cover rounded shadow-lg border border-slate-700" />
-                    <div class="flex-1">
-                        <h1 id="dramaTitle" class="text-md font-bold text-sky-400 leading-tight mb-1"></h1>
-                        <p id="dramaCount" class="text-[10px] text-slate-500 mb-2"></p>
-                        <div class="flex flex-wrap gap-1" id="dramaTags"></div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <script>
@@ -80,39 +62,15 @@
                         fetch(`https://api.sansekai.my.id/api/dramabox/detail?bookId=${bookId}`),
                         fetch(`https://api.sansekai.my.id/api/dramabox/allepisode?bookId=${bookId}`),
                     ]);
-
-                    const detailData = await detailRes.json();
                     const episodesData = await episodesRes.json();
-
-                    // Sesuai JSON: data ada di property 'data' atau root array
                     dramaData = episodesData.data || episodesData;
-
-                    renderDetail(detailData);
                     
                     if (dramaData.length > 0) {
                         renderGrid();
                         loadEpisode(0); 
                     }
                 } catch (error) {
-                    alert("Terjadi kesalahan saat memuat data.");
-                }
-            }
-
-            function renderDetail(data) {
-                document.getElementById("dramaHeader").classList.remove("hidden");
-                document.getElementById("dramaTitle").innerText = data.bookName;
-                document.getElementById("dramaCover").src = data.coverWap;
-                document.getElementById("dramaCount").innerText = `Total: ${data.chapterCount} Episode`;
-                
-                const tagContainer = document.getElementById("dramaTags");
-                tagContainer.innerHTML = "";
-                if (data.tags) {
-                    data.tags.slice(0, 3).forEach(tag => {
-                        const span = document.createElement("span");
-                        span.className = "text-[8px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded border border-slate-700 uppercase";
-                        span.innerText = tag;
-                        tagContainer.appendChild(span);
-                    });
+                    alert("Gagal memuat data.");
                 }
             }
 
@@ -124,7 +82,7 @@
                     btn.innerText = index + 1;
                     const isActive = index === currentIdx;
                     btn.className = `aspect-square rounded-lg font-bold border transition-all ${
-                        isActive ? "bg-sky-500 border-sky-400 text-white shadow-lg shadow-sky-900/40 scale-95" : "bg-slate-800 border-slate-700 text-slate-500 hover:bg-slate-700 hover:text-white"
+                        isActive ? "bg-sky-500 border-sky-400 text-white shadow-lg" : "bg-slate-800 border-slate-700 text-slate-500 hover:text-white"
                     }`;
                     btn.onclick = () => loadEpisode(index);
                     grid.appendChild(btn);
@@ -135,45 +93,60 @@
                 if (!dramaData[index]) return;
                 currentIdx = index;
                 const episode = dramaData[index];
-
-                // Membedah cdnList -> videoPathList sesuai JSON kamu
                 const videoList = episode.cdnList?.[0]?.videoPathList;
-                if (!videoList) {
-                    alert("Kualitas video tidak ditemukan.");
-                    return;
-                }
+                if (!videoList) return;
 
-                // Update Dropdown Kualitas
                 const select = document.getElementById("qualitySelect");
                 select.innerHTML = "";
                 
-                // Urutkan kualitas dari tertinggi (1080 -> 720 -> dst)
                 const sorted = [...videoList].sort((a,b) => b.quality - a.quality);
                 
+                // --- LOGIKA MEMORY QUALITY ---
+                // Ambil preferensi kualitas dari browser (localStorage)
+                const savedQuality = localStorage.getItem("preferredQuality"); 
+                let pathToPlay = "";
+
                 sorted.forEach(v => {
                     const opt = document.createElement("option");
                     opt.value = v.videoPath;
+                    opt.setAttribute("data-quality", v.quality); // Simpan angka kualitasnya
                     opt.innerText = v.quality + "p";
                     select.appendChild(opt);
+
+                    // Jika kualitas ini sama dengan yang disimpan di browser, tandai
+                    if (savedQuality && v.quality.toString() === savedQuality) {
+                        pathToPlay = v.videoPath;
+                    }
                 });
 
-                // Pilih kualitas tertinggi secara default
-                const defaultPath = sorted[0].videoPath;
-                select.value = defaultPath;
+                // Jika kualitas yang diinginkan tidak ditemukan di episode ini, pakai default tertinggi
+                if (!pathToPlay) {
+                    pathToPlay = sorted[0].videoPath;
+                    // Update localStorage agar sinkron dengan yang sedang diputar
+                    localStorage.setItem("preferredQuality", sorted[0].quality);
+                }
 
-                await decryptAndPlay(defaultPath, episode.chapterName);
+                select.value = pathToPlay;
+                await decryptAndPlay(pathToPlay, episode.chapterName);
                 renderGrid();
-
+                
                 const activeBtn = document.querySelectorAll("#episodeGrid button")[index];
                 if (activeBtn) activeBtn.scrollIntoView({ behavior: "smooth", block: "center" });
             }
 
             async function handleManualQualityChange() {
-                const selectedPath = document.getElementById("qualitySelect").value;
+                const select = document.getElementById("qualitySelect");
+                const selectedPath = select.value;
                 const chapterName = dramaData[currentIdx].chapterName;
                 
+                // Ambil label angka kualitas (misal "720") dari option yang dipilih
+                const selectedQualityLabel = select.options[select.selectedIndex].getAttribute("data-quality");
+                
+                // SIMPAN KE BROWSER
+                localStorage.setItem("preferredQuality", selectedQualityLabel);
+
                 const video = document.getElementById("videoPlayer");
-                const lastTime = video.currentTime; // Simpan posisi nonton
+                const lastTime = video.currentTime;
 
                 await decryptAndPlay(selectedPath, chapterName, lastTime);
             }
@@ -181,9 +154,7 @@
             async function decryptAndPlay(url, name, seekTo = 0) {
                 const epNameElem = document.getElementById("episodeName");
                 const loading = document.getElementById("loadingOverlay");
-                
                 loading.classList.remove("hidden");
-                epNameElem.innerHTML = `<span class="text-sky-500 italic text-sm animate-pulse">Memproses Dekripsi...</span>`;
 
                 try {
                     const res = await fetch(`https://api.sansekai.my.id/api/dramabox/decrypt?url=${encodeURIComponent(url)}`);
@@ -196,16 +167,11 @@
 
                         source.src = data.streamUrl;
                         video.load();
-                        
-                        // Lanjutkan dari detik terakhir jika ganti kualitas
                         video.currentTime = seekTo; 
-                        
-                        video.play().catch(() => console.log("Menunggu interaksi user"));
-                    } else {
-                        throw new Error("Gagal mendapatkan streamUrl");
+                        video.play().catch(() => {});
                     }
                 } catch (e) {
-                    epNameElem.innerText = "Error: Dekripsi Gagal ❌";
+                    epNameElem.innerText = "Error Dekripsi ❌";
                 } finally {
                     loading.classList.add("hidden");
                 }
